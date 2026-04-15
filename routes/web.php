@@ -16,20 +16,18 @@ Route::get('/', function () {
 Route::prefix('trade')->name('trade.')->group(function () {
     Route::get('/', [TradeController::class, 'index'])->name('index');
     Route::get('/export', [TradeController::class, 'export'])->name('export');
+    Route::get('/export/{id}', [TradeController::class, 'exportSingle'])->name('export.single'); // ✅ tambahan
 });
-
 
 // ─────────────────────────────────────────────
 // ADMIN AUTH — Login & Logout khusus admin
 // ─────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // Halaman login admin (guest only — kalau sudah login admin, redirect ke dashboard)
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-    // ─── Area Admin (wajib login & role=admin) ───
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/upload', [UploadController::class, 'index'])->name('upload.index');
         Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
@@ -39,34 +37,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 });
 
-
 // ─────────────────────────────────────────────
-// USER AUTH — Dashboard & Profile (user biasa)
-// Hanya untuk user yang sudah login (bukan admin)
+// USER — Dashboard publik (tanpa login)
 // ─────────────────────────────────────────────
 Route::get('/dashboard', function () {
-
-    if (auth()->user()->role === 'admin') {
-        return redirect('/admin/upload');
-    }
-
     return view('user.dashboard');
-
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// ROUTE LOGIN USER 👇 tambahkan di sini
-Route::get('/login-user', function () {
-    return view('auth.login-user'); 
-});
+})->name('dashboard');
 
 require __DIR__.'/auth.php';

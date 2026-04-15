@@ -433,9 +433,6 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="{{ route('admin.upload.index') }}" class="btn btn-ghost">
-                ⬆ Admin Upload
-            </a>
         </div>
     </div>
 </header>
@@ -505,6 +502,42 @@
                     @endforeach
                 </select>
             </div>
+            <!-- HS Code -->
+            <div class="filter-group">
+                <label class="filter-label">HS Code</label>
+                <input type="text" name="hs_code" class="filter-input"
+                    placeholder="Cari HS Code..."
+                    value="{{ $filters['hs_code'] ?? '' }}">
+            </div>
+
+            <!-- Bulan -->
+            <div class="filter-group">
+                <label class="filter-label">Bulan</label>
+                <select name="bulan" class="filter-select">
+                    <option value="">Semua Bulan</option>
+                    @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $bln)
+                        <option value="{{ $i+1 }}" {{ ($filters['bulan'] ?? '') == $i+1 ? 'selected' : '' }}>{{ $bln }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Range Berat -->
+            <div class="filter-group">
+                <label class="filter-label">Berat (Kg) — Range</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="number" name="berat_min" class="filter-input" placeholder="Min" value="{{ $filters['berat_min'] ?? '' }}" style="width:50%">
+                    <input type="number" name="berat_max" class="filter-input" placeholder="Max" value="{{ $filters['berat_max'] ?? '' }}" style="width:50%">
+                </div>
+            </div>
+
+            <!-- Range Nilai -->
+            <div class="filter-group">
+                <label class="filter-label">Nilai (USD) — Range</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="number" name="nilai_min" class="filter-input" placeholder="Min" value="{{ $filters['nilai_min'] ?? '' }}" style="width:50%">
+                    <input type="number" name="nilai_max" class="filter-input" placeholder="Max" value="{{ $filters['nilai_max'] ?? '' }}" style="width:50%">
+                </div>
+            </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary btn-filter">
                     🔍 Terapkan Filter
@@ -542,6 +575,7 @@
                             <th style="text-align:right">Nilai (USD)</th>
                             <th>Pelabuhan</th>
                             <th>Keterangan</th>
+                            <th>Unduh</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -573,6 +607,13 @@
                                 </div>
                             </td>
                         </tr>
+                        <td>
+                            <a href="{{ route('trade.export.single', $row->id) }}"
+                            class="btn btn-green"
+                            style="padding:4px 10px; font-size:0.72rem;">
+                                ⬇
+                            </a>
+                        </td>
                         @endforelse
                     </tbody>
                 </table>

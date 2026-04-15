@@ -29,15 +29,6 @@
             margin: 0;
         }
 
-        .logout-btn {
-            background: #ff4d4d;
-            border: none;
-            padding: 8px 15px;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
         /* CONTAINER */
         .container {
             padding: 30px;
@@ -93,18 +84,13 @@
     <!-- NAVBAR -->
     <div class="navbar">
         <h2>BPS Trade - User</h2>
-
-        <form method="POST" action="/logout">
-            @csrf
-            <button class="logout-btn">Logout</button>
-        </form>
     </div>
 
     <!-- CONTENT -->
     <div class="container">
 
         <div class="welcome">
-            👋 Selamat datang, <b>{{ auth()->user()->name }}</b>
+            👋 Selamat datang di BPS Trade
         </div>
 
         <div class="cards">
@@ -119,12 +105,6 @@
                 <h3>📄 Export Data</h3>
                 <p>Download laporan data perdagangan</p>
                 <a href="/trade/export">Download</a>
-            </div>
-
-            <div class="card">
-                <h3>👤 Profil</h3>
-                <p>Kelola akun dan informasi pribadi</p>
-                <a href="/profile">Lihat Profil</a>
             </div>
 
         </div>
