@@ -45,7 +45,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Hanya untuk user yang sudah login (bukan admin)
 // ─────────────────────────────────────────────
 Route::get('/dashboard', function () {
-    return view('dashboard');
+
+    if (auth()->user()->role === 'admin') {
+        return redirect('/admin/upload');
+    }
+
+    return view('user.dashboard');
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
