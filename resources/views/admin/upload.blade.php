@@ -415,9 +415,20 @@
                 <div class="logo-sub">Upload Data Perdagangan</div>
             </div>
         </div>
-        <a href="{{ route('trade.index') }}" class="btn btn-ghost">
-            ← Kembali ke Portal
-        </a>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-size:0.8rem; color:var(--text-dim);">
+                👤 {{ auth()->user()->name }}
+            </span>
+            <a href="{{ route('trade.index') }}" class="btn btn-ghost">
+                ← Portal Publik
+            </a>
+            <form method="POST" action="{{ route('admin.logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" class="btn" style="background:rgba(244,63,94,0.15); color:#f43f5e; border:1px solid rgba(244,63,94,0.3);">
+                    Logout
+                </button>
+            </form>
+        </div>
     </div>
 </header>
 
