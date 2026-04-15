@@ -25,28 +25,7 @@ class TradeData extends Model
         'berat_kg'  => 'float',
         'nilai_usd' => 'float',
     ];
-
-    public function scopeFilter($query, array $filters)
-    {
-        if (!empty($filters['tahun'])) {
-            $query->where('tahun', $filters['tahun']);
-        }
-        if (!empty($filters['komoditas'])) {
-            $query->where('komoditas', 'like', '%' . $filters['komoditas'] . '%');
-        }
-        if (!empty($filters['negara_tujuan'])) {
-            $query->where('negara_tujuan', 'like', '%' . $filters['negara_tujuan'] . '%');
-        }
-        if (!empty($filters['pelabuhan'])) {
-            $query->where('pelabuhan', 'like', '%' . $filters['pelabuhan'] . '%');
-        }
-        if (!empty($filters['jenis'])) {
-            $query->where('jenis', $filters['jenis']);
-        }
-        return $query;
-    }
-
-        public function scopeFilter($query, array $filters)
+ public function scopeFilter($query, array $filters)
     {
         if (!empty($filters['jenis']))        $query->where('jenis', $filters['jenis']);
         if (!empty($filters['tahun']))        $query->where('tahun', $filters['tahun']);
@@ -62,4 +41,5 @@ class TradeData extends Model
 
         return $query;
     }
+
 }

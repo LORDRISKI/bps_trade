@@ -593,27 +593,27 @@
                             <td class="number">{{ $row->berat_kg ? number_format($row->berat_kg, 2) : '—' }}</td>
                             <td class="number">{{ $row->nilai_usd ? number_format($row->nilai_usd, 2) : '—' }}</td>
                             <td>{{ $row->pelabuhan ?? '—' }}</td>
-                            <td style="color:var(--text-dim); font-size:0.78rem; max-width:150px; overflow:hidden; text-overflow:ellipsis">
+                           <td style="color:var(--text-dim); font-size:0.78rem; max-width:150px; overflow:hidden; text-overflow:ellipsis">
                                 {{ $row->keterangan ?? '—' }}
                             </td>
+                            <td>
+                                <a href="{{ route('trade.export.single', $row->id) }}"
+                                   class="btn btn-green"
+                                   style="padding:4px 10px; font-size:0.72rem;">
+                                    ⬇
+                                </a>
+                            </td>
                         </tr>
-                        @empty
+                       @empty
                         <tr>
-                            <td colspan="9">
+                            <td colspan="10">
                                 <div class="empty-state">
-                                    <div class="empty-icon">📭</div>
+                                    <div class="empty-icon">🔍</div>
                                     <div class="empty-title">Tidak ada data ditemukan</div>
                                     <div class="empty-desc">Coba ubah filter atau hubungi admin untuk upload data.</div>
                                 </div>
                             </td>
                         </tr>
-                        <td>
-                            <a href="{{ route('trade.export.single', $row->id) }}"
-                            class="btn btn-green"
-                            style="padding:4px 10px; font-size:0.72rem;">
-                                ⬇
-                            </a>
-                        </td>
                         @endforelse
                     </tbody>
                 </table>
