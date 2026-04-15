@@ -53,7 +53,7 @@ button{
     <div class="badge">USER PANEL</div>
     <h2>Login Pengguna</h2>
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login.user') }}">
         @csrf
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>

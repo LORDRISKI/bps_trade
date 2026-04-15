@@ -29,9 +29,9 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if (auth()->user()->role === 'admin') {
-             return redirect('/admin/upload');
+            return redirect('/admin/upload');
         } else {
-            return redirect('/dashboard');
+            return redirect('/trade'); // 🔥 langsung ke portal data publik
         }
     }
 

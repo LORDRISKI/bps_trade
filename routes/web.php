@@ -60,4 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// ROUTE LOGIN USER 👇 tambahkan di sini
+Route::get('/login-user', function () {
+    return view('auth.login-user'); 
+});
+
 require __DIR__.'/auth.php';
