@@ -160,6 +160,21 @@
         @media(max-width:1100px) { .bottom-grid { grid-template-columns:1fr; } }
         @media(max-width:800px)  { .charts-row { grid-template-columns:1fr; } .stats-grid { grid-template-columns:repeat(2,1fr); } }
         @media(max-width:480px)  { .stats-grid { grid-template-columns:1fr; } .main { padding:1rem; } }
+
+        /* ADMIN DROPDOWN */
+        .admin-menu { position:relative; }
+        .admin-menu-btn { background:none; border:none; cursor:pointer; padding:0; }
+        .admin-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800; color:white; font-family:'Sora',sans-serif; transition:opacity 0.2s; }
+        .admin-menu-btn:hover .admin-avatar { opacity:0.85; }
+        .admin-dropdown { display:none; position:absolute; right:0; top:calc(100% + 10px); min-width:190px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,0.4); z-index:200; }
+        .admin-dropdown.open { display:block; }
+        .admin-dropdown-header { padding:0.85rem 1rem; border-bottom:1px solid var(--border); }
+        .admin-dropdown-name { font-size:0.85rem; font-weight:700; color:var(--text); }
+        .admin-dropdown-role { font-size:0.7rem; color:var(--text-dim); margin-top:2px; }
+        .admin-dropdown-item { display:flex; align-items:center; gap:8px; width:100%; padding:0.65rem 1rem; font-size:0.82rem; font-weight:600; color:var(--text-mid); text-decoration:none; background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s,color 0.15s; text-align:left; }
+        .admin-dropdown-item:hover { background:rgba(59,130,246,0.07); color:var(--accent); }
+        .admin-dropdown-divider { height:1px; background:var(--border); }
+        .admin-dropdown-logout:hover { background:rgba(244,63,94,0.07); color:var(--red); }
     </style>
 </head>
 <body>
@@ -174,12 +189,27 @@
             </div>
         </div>
         <div class="nav-links">
-            <span style="font-size:0.8rem; color:var(--text-dim);">👤 {{ auth()->user()->name }}</span>
-            <a href="{{ route('trade.index') }}" class="btn btn-ghost">← Data Publik</a>
-            <form method="POST" action="{{ route('admin.logout') }}" style="display:inline">
-                @csrf
-                <button type="submit" class="btn btn-ghost">Logout</button>
-            </form>
+            <div class="admin-menu" id="adminMenu">
+                <button class="admin-menu-btn" onclick="toggleMenu()" title="Menu Admin">
+                    <div class="admin-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                </button>
+                <div class="admin-dropdown" id="adminDropdown">
+                    <div class="admin-dropdown-header">
+                        <div class="admin-dropdown-name">{{ auth()->user()->name }}</div>
+                        <div class="admin-dropdown-role">Administrator</div>
+                    </div>
+                    <a href="{{ route('trade.index') }}" class="admin-dropdown-item">
+                        <span>←</span> Data Publik
+                    </a>
+                    <div class="admin-dropdown-divider"></div>
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button type="submit" class="admin-dropdown-item admin-dropdown-logout">
+                            <span>⏻</span> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -519,6 +549,16 @@
                 btnUpload.disabled = false;
             });
     }
+
+    function toggleMenu() {
+        document.getElementById('adminDropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('adminMenu');
+        if (menu && !menu.contains(e.target)) {
+            document.getElementById('adminDropdown').classList.remove('open');
+        }
+    });
 </script>
 </body>
 </html>

@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TradeController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\UploadController;
-use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // ─────────────────────────────────────────────
@@ -29,7 +28,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/upload', [UploadController::class, 'index'])->name('upload.index');
         Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload/{id}', [UploadController::class, 'destroy'])->name('upload.destroy');

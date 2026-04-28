@@ -428,7 +428,7 @@
         <div class="logo">
             <div class="logo-icon">📊</div>
             <div>
-                <div class="logo-text">BPS Trade Data</div>
+                <div class="logo-text">BPS Provinsi Jambi</div>
                 <div class="logo-sub">Sistem Informasi Perdagangan</div>
             </div>
         </div>
@@ -440,8 +440,8 @@
 <section class="hero">
     <div class="hero-inner">
         <div class="hero-tag">📦 Portal Data Publik</div>
-        <h1>Data <span>Ekspor &amp; Impor</span><br>Indonesia</h1>
-        <p>Akses dan unduh data perdagangan internasional berdasarkan komoditas, negara tujuan, pelabuhan, dan periode waktu.</p>
+        <h1>Data <span>Ekspor &amp; Impor</h1>
+        <p>Mengakses dan unduh data perdagangan internasional berdasarkan komoditas, negara tujuan, pelabuhan, dan periode waktu.</p>
         <div class="stats-row">
             <div class="stat-item">
                 <span class="stat-label">Total Records</span>
