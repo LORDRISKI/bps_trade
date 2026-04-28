@@ -17,4 +17,12 @@ class UploadLog extends Model
         'status',
         'error_message',
     ];
+
+    /**
+     * Relasi ke data trade yang diimport dari upload ini.
+     */
+    public function tradeData()
+    {
+        return $this->hasMany(TradeData::class, 'upload_log_id');
+    }
 }
