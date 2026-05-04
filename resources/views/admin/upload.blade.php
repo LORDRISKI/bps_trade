@@ -24,7 +24,8 @@
         .header { background:var(--bg2); border-bottom:1px solid var(--border); padding:0 2rem; position:sticky; top:0; z-index:100; }
         .header-inner { max-width:1300px; margin:0 auto; height:64px; display:flex; align-items:center; justify-content:space-between; }
         .logo { display:flex; align-items:center; gap:12px; }
-        .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .logo-icon { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+        .logo-icon img { width:100%; height:100%; object-fit:contain; }
         .logo-text { font-size:1.1rem; font-weight:700; }
         .logo-sub { font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; }
         .nav-links { display:flex; align-items:center; gap:8px; }
@@ -182,7 +183,7 @@
 <header class="header">
     <div class="header-inner">
         <div class="logo">
-            <div class="logo-icon">📊</div>
+            <div class="logo-icon"><img src="/images/logo-bps.png" alt="Logo BPS"></div>
             <div>
                 <div class="logo-text">Admin Panel</div>
                 <div class="logo-sub">BPS Trade System</div>

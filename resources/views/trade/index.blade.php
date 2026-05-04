@@ -54,11 +54,12 @@
             gap: 12px;
         }
         .logo-icon {
-            width: 36px; height: 36px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            border-radius: 8px;
+            width: 44px; height: 44px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+        }
+        .logo-icon img {
+            width: 100%; height: 100%;
+            object-fit: contain;
         }
         .logo-text {
             font-size: 1.1rem;
@@ -426,7 +427,7 @@
 <header class="header">
     <div class="header-inner">
         <div class="logo">
-            <div class="logo-icon">📊</div>
+            <div class="logo-icon"><img src="/images/logo-bps.png" alt="Logo BPS"></div>
             <div>
                 <div class="logo-text">BPS Provinsi Jambi</div>
                 <div class="logo-sub">Sistem Informasi Perdagangan</div>

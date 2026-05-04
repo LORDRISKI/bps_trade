@@ -76,6 +76,27 @@ class TradeController extends Controller
         return response()->stream($callback, 200, $this->csvHeaders($filename));
     }
 
+    private function writeCsv($data)
+    {
+        $file = fopen('php://output', 'w');
+        fputs($file, "\xEF\xBB\xBF"); // BOM UTF-8
+        fputcsv($file, ['Tahun', 'Jenis', 'HS Code', 'Komoditas', 'Negara Tujuan', 'Berat (Kg)', 'Nilai (USD)', 'Pelabuhan', 'Keterangan']);
+        foreach ($data as $row) {
+            fputcsv($file, [
+                $row->tahun,
+                strtoupper($row->jenis),
+                $row->hs_code,
+                $row->komoditas,
+                $row->negara_tujuan,
+                $row->berat_kg,
+                $row->nilai_usd,
+                $row->pelabuhan,
+                $row->keterangan,
+            ]);
+        }
+        fclose($file);
+    }
+
     private function csvHeaders($filename)
     {
         return [
