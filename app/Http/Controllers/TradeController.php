@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\TradeData;
 use Illuminate\Http\Request;
 
@@ -8,7 +10,7 @@ class TradeController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'tahun', 'bulan', 'komoditas', 'negara_tujuan', 
+            'tahun', 'bulan', 'komoditas', 'negara_tujuan',
             'pelabuhan', 'jenis', 'hs_code',
             'berat_min', 'berat_max', 'nilai_min', 'nilai_max'
         ]);
@@ -40,64 +42,121 @@ class TradeController extends Controller
         ]);
 
         $data     = TradeData::filter($filters)->orderBy('tahun', 'desc')->get();
-        $filename = 'trade_data_' . now()->format('Ymd_His') . '.csv';
+        $jenis    = $filters['jenis'] ?? 'semua';
+        $filename = 'trade_' . $jenis . '_' . now()->format('Ymd_His') . '.csv';
 
         return response()->stream(
-            fn() => $this->writeCsv(collect([$data])->flatten()),
+            fn() => $this->writeCsv($data, $jenis),
             200,
             $this->csvHeaders($filename)
         );
     }
 
-    // ✅ Download 1 baris data berdasarkan ID
     public function exportSingle($id)
     {
         $row      = TradeData::findOrFail($id);
         $filename = 'trade_' . $row->tahun . '_' . $row->id . '.csv';
 
         $callback = function () use ($row) {
-            $file = fopen('php://output', 'w');
+            $file  = fopen('php://output', 'w');
+            $jenis = $row->jenis;
             fputs($file, "\xEF\xBB\xBF");
-            fputcsv($file, ['Tahun', 'Jenis', 'HS Code', 'Komoditas', 'Negara Tujuan', 'Berat (Kg)', 'Nilai (USD)', 'Pelabuhan', 'Keterangan']);
-            fputcsv($file, [
-                $row->tahun,
-                strtoupper($row->jenis),
-                $row->hs_code,
-                $row->komoditas,
-                $row->negara_tujuan,
-                $row->berat_kg,
-                $row->nilai_usd,
-                $row->pelabuhan,
-                $row->keterangan,
-            ]);
+            fputcsv($file, $this->csvColumns($jenis), ';');
+            fputcsv($file, $this->mapRow($row, $jenis), ';');
             fclose($file);
         };
 
         return response()->stream($callback, 200, $this->csvHeaders($filename));
     }
 
-    private function writeCsv($data)
+    private function writeCsv($data, string $jenis)
     {
-        $file = fopen('php://output', 'w');
-        fputs($file, "\xEF\xBB\xBF"); // BOM UTF-8
-        fputcsv($file, ['Tahun', 'Jenis', 'HS Code', 'Komoditas', 'Negara Tujuan', 'Berat (Kg)', 'Nilai (USD)', 'Pelabuhan', 'Keterangan']);
+        $file          = fopen('php://output', 'w');
+        $headerWritten = false;
+        fputs($file, "\xEF\xBB\xBF");
+
         foreach ($data as $row) {
-            fputcsv($file, [
-                $row->tahun,
-                strtoupper($row->jenis),
-                $row->hs_code,
-                $row->komoditas,
-                $row->negara_tujuan,
-                $row->berat_kg,
-                $row->nilai_usd,
-                $row->pelabuhan,
-                $row->keterangan,
-            ]);
+            $rowJenis = ($jenis !== 'semua') ? $jenis : $row->jenis;
+            if (!$headerWritten) {
+                fputcsv($file, $this->csvColumns($rowJenis), ';');
+                $headerWritten = true;
+            }
+            fputcsv($file, $this->mapRow($row, $rowJenis), ';');
         }
+
+        if (!$headerWritten) {
+            fputcsv($file, $this->csvColumns($jenis === 'semua' ? 'ekspor' : $jenis), ';');
+        }
+
         fclose($file);
     }
 
-    private function csvHeaders($filename)
+    private function csvColumns(string $jenis): array
+    {
+        if ($jenis === 'impor') {
+            return [
+                'JREC', 'BULAN', 'TAHUN', 'PROPINSI', 'PELABUHAN',
+                'HS8_BTKI22', 'NEGARA', 'BERAT', 'NILAI',
+                'negara', 'Becx', 'neg', 'deskr', 'lama',
+                'HS8desk', 'nm_pelabuhan', 'nm_negara',
+                'Jenis', 'nm_prop', 'negara asal', 'pel_bong',
+            ];
+        }
+        return [
+            'jrec', 'bulan', 'tahun', 'propinsi', 'pelabuhan',
+            'HS8_btki2022', 'negara', 'berat', 'nilai',
+            'negara.1', 'deskhs8', 'neg pil', 'pel riil',
+            'HS8_desk', 'Keterangan',
+        ];
+    }
+
+    private function mapRow($row, string $jenis): array
+    {
+        if ($jenis === 'impor') {
+            return [
+                $row->id,
+                $row->bulan ?? '',
+                $row->tahun,
+                $row->propinsi ?? '',
+                $row->pelabuhan ?? '',
+                $row->hs_code ?? '',
+                $row->kode_negara ?? '',
+                $row->berat_kg ?? '',
+                $row->nilai_usd ?? '',
+                $row->negara_tujuan ?? '',
+                $row->becx ?? '',
+                $row->neg ?? '',
+                $row->deskr ?? '',
+                $row->lama ?? '',
+                $row->komoditas ?? '',
+                $row->nm_pelabuhan ?? '',
+                $row->nm_negara ?? '',
+                $row->jenis_barang ?? '',
+                $row->nm_prop ?? '',
+                $row->negara_asal ?? '',
+                $row->pel_bong ?? '',
+            ];
+        }
+        return [
+            $row->id,
+            $row->bulan ?? '',
+            $row->tahun,
+            $row->propinsi ?? '',
+            $row->pelabuhan ?? '',
+            $row->hs_code ?? '',
+            $row->kode_negara ?? '',
+            $row->berat_kg ?? '',
+            $row->nilai_usd ?? '',
+            $row->negara_tujuan ?? '',
+            $row->deskhs8 ?? '',
+            $row->neg_pil ?? '',
+            $row->pel_riil ?? '',
+            $row->komoditas ?? '',
+            $row->keterangan ?? '',
+        ];
+    }
+
+    private function csvHeaders($filename): array
     {
         return [
             'Content-Type'        => 'text/csv',

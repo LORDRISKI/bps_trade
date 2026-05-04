@@ -34,7 +34,7 @@ class UploadController extends Controller
         $eksporPerTahun = [];
         $imporPerTahun  = [];
         foreach ($tahunList as $tahun) {
-            $rows           = $nilaiPerTahun[$tahun];
+            $rows             = $nilaiPerTahun[$tahun];
             $eksporPerTahun[] = round($rows->where('jenis', 'ekspor')->sum('total_nilai') / 1e6, 2);
             $imporPerTahun[]  = round($rows->where('jenis', 'impor')->sum('total_nilai') / 1e6, 2);
         }
@@ -128,8 +128,7 @@ class UploadController extends Controller
             $header = null;
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
                 if (!$header) {
-                    $header = array_map('strtolower', array_map('trim', $row));
-                    $header = array_map(fn($h) => str_replace([' ', '(', ')'], ['_', '', ''], $h), $header);
+                    $header = $this->normalizeHeader($row);
                     continue;
                 }
                 $total++;
@@ -138,6 +137,8 @@ class UploadController extends Controller
                     $success++;
                 } catch (\Exception $e) {
                     $failed++;
+                    \Log::error('Insert gagal: ' . $e->getMessage());
+                    if ($failed === 1) throw $e;
                 }
             }
             fclose($handle);
@@ -157,8 +158,7 @@ class UploadController extends Controller
             $header = null;
             foreach ($rows as $row) {
                 if (!$header) {
-                    $header = array_map('strtolower', array_map('trim', array_map('strval', $row)));
-                    $header = array_map(fn($h) => str_replace([' ', '(', ')'], ['_', '', ''], $h), $header);
+                    $header = $this->normalizeHeader(array_map('strval', $row));
                     continue;
                 }
                 if (empty(array_filter($row))) continue;
@@ -174,32 +174,92 @@ class UploadController extends Controller
         return compact('total', 'success', 'failed');
     }
 
+    /**
+     * Normalisasi header: lowercase + trim + ganti spasi/tanda baca jadi underscore
+     */
+    private function normalizeHeader(array $row): array
+    {
+        return array_map(function ($h) {
+            $h = strtolower(trim((string) $h));
+            $h = str_replace([' ', '(', ')', '-', '.'], '_', $h);
+            return rtrim($h, '_');
+        }, $row);
+    }
+
     private function insertRow(array $row, string $jenis, int $logId): void
     {
         $get = function (array $row, array $keys) {
             foreach ($keys as $key) {
-                if (isset($row[$key]) && $row[$key] !== '') return $row[$key];
-                if (isset($row[strtolower($key)]) && $row[strtolower($key)] !== '') return $row[strtolower($key)];
-                if (isset($row[strtoupper($key)]) && $row[strtoupper($key)] !== '') return $row[strtoupper($key)];
+                $variants = [$key, strtolower($key), strtoupper($key)];
+                foreach ($variants as $k) {
+                    if (isset($row[$k]) && trim((string)$row[$k]) !== '') return $row[$k];
+                }
             }
             return null;
         };
 
-        $negara    = $get($row, ['nm_negara', 'negara asal', 'deskr']) ?? $get($row, ['negara', 'NEGARA', 'country']);
-        $pelabuhan = $get($row, ['nm_pelabuhan', 'pel riil', 'pel_bong']) ?? $get($row, ['pelabuhan', 'PELABUHAN', 'port']);
-        $komoditas = $get($row, ['HS8_desk', 'deskhs8', 'deskr', 'HS8desk']) ?? $get($row, ['komoditas', 'commodity']);
+        if ($jenis === 'ekspor') {
+            $this->insertEkspor($row, $logId, $get);
+        } else {
+            $this->insertImpor($row, $logId, $get);
+        }
+    }
 
+    private function insertEkspor(array $row, int $logId, callable $get): void
+    {
+        // Kolom ekspor: jrec, bulan, tahun, propinsi, pelabuhan, HS8_btki2022,
+        //               negara (kode), berat, nilai, negara.1 (nama), deskhs8,
+        //               neg pil, pel riil, HS8_desk, Keterangan
         TradeData::create([
             'upload_log_id' => $logId,
-            'tahun'         => $get($row, ['tahun', 'TAHUN', 'year']),
-            'komoditas'     => $komoditas,
-            'hs_code'       => $get($row, ['HS8_btki2022', 'HS8_BTKI22', 'hs_code', 'hs']),
-            'negara_tujuan' => $negara,
-            'berat_kg'      => $this->parseNumber($get($row, ['berat', 'BERAT', 'berat_kg', 'weight'])),
-            'nilai_usd'     => $this->parseNumber($get($row, ['nilai', 'NILAI', 'nilai_usd', 'value'])),
-            'pelabuhan'     => $pelabuhan,
-            'keterangan'    => $get($row, ['Keterangan', 'keterangan', 'Jenis', 'lama']),
-            'jenis'         => $jenis,
+            'jenis'         => 'ekspor',
+            'bulan'         => $get($row, ['bulan']),
+            'tahun'         => $get($row, ['tahun']),
+            'propinsi'      => $get($row, ['propinsi', 'propir']),
+            'pelabuhan'     => $get($row, ['pelabuhan']),               // kode pelabuhan
+            'hs_code'       => $get($row, ['hs8_btki2022', 'hs8_btki22', 'hs_code']),
+            'kode_negara'   => $get($row, ['negara']),                  // kode negara
+            'berat_kg'      => $this->parseNumber($get($row, ['berat'])),
+            'nilai_usd'     => $this->parseNumber($get($row, ['nilai'])),
+            'negara_tujuan' => $get($row, ['negara_1', 'negara.1']),    // nama negara lengkap
+            'deskhs8'       => $get($row, ['deskhs8']),                 // kategori komoditas
+            'neg_pil'       => $get($row, ['neg_pil']),
+            'pel_riil'      => $get($row, ['pel_riil']),                // nama pelabuhan nyata
+            'komoditas'     => $get($row, ['hs8_desk', 'hs8desk']),    // deskripsi HS8
+            'keterangan'    => $get($row, ['keterangan']),
+        ]);
+    }
+
+    private function insertImpor(array $row, int $logId, callable $get): void
+    {
+        // Kolom impor: JREC, BULAN, TAHUN, PROPINSI, PELABUHAN, HS8_BTKI22,
+        //              NEGARA (kode), BERAT, NILAI, negara (nama), Becx, neg,
+        //              deskr, lama, HS8desk, nm_pelabuhan, nm_negara,
+        //              Jenis, nm_prop, negara asal, pel_bong
+        TradeData::create([
+            'upload_log_id' => $logId,
+            'jenis'         => 'impor',
+            'bulan'         => $get($row, ['bulan']),
+            'tahun'         => $get($row, ['tahun']),
+            'propinsi'      => $get($row, ['propinsi']),
+            'pelabuhan'     => $get($row, ['pelabuhan']),               // kode pelabuhan
+            'hs_code'       => $get($row, ['hs8_btki22', 'hs8_btki2022', 'hs_code']),
+            'kode_negara'   => $get($row, ['negara']),                  // kode negara
+            'berat_kg'      => $this->parseNumber($get($row, ['berat'])),
+            'nilai_usd'     => $this->parseNumber($get($row, ['nilai'])),
+            'negara_tujuan' => $get($row, ['nm_negara']),               // nama negara lengkap
+            'komoditas'     => $get($row, ['hs8desk', 'hs8_desk']),    // deskripsi HS8
+            'becx'          => $get($row, ['becx']),
+            'neg'           => $get($row, ['neg']),
+            'deskr'         => $get($row, ['deskr']),                   // kategori negara
+            'lama'          => $get($row, ['lama']),
+            'nm_pelabuhan'  => $get($row, ['nm_pelabuhan']),
+            'nm_negara'     => $get($row, ['nm_negara']),
+            'jenis_barang'  => $get($row, ['jenis']),                   // NM / dll
+            'nm_prop'       => $get($row, ['nm_prop']),
+            'negara_asal'   => $get($row, ['negara_asal']),
+            'pel_bong'      => $get($row, ['pel_bong']),
+            'keterangan'    => $get($row, ['keterangan', 'lama']),
         ]);
     }
 

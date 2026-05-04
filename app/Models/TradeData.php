@@ -9,27 +9,43 @@ class TradeData extends Model
     protected $table = 'trade_data';
 
     protected $fillable = [
-        'upload_log_id', // ← tambahan
+        'upload_log_id',
+        'jenis',
+        'bulan',
         'tahun',
-        'komoditas',
+        'propinsi',
+        'pelabuhan',
         'hs_code',
-        'negara_tujuan',
+        'kode_negara',
         'berat_kg',
         'nilai_usd',
-        'pelabuhan',
+        'negara_tujuan',
+        'komoditas',
         'keterangan',
-        'jenis',
+        // Khusus Ekspor
+        'neg_pil',
+        'pel_riil',
+        'deskhs8',
+        // Khusus Impor
+        'becx',
+        'neg',
+        'deskr',
+        'lama',
+        'nm_pelabuhan',
+        'nm_negara',
+        'jenis_barang',
+        'nm_prop',
+        'negara_asal',
+        'pel_bong',
     ];
 
     protected $casts = [
         'tahun'     => 'integer',
+        'bulan'     => 'integer',
         'berat_kg'  => 'float',
         'nilai_usd' => 'float',
     ];
 
-    /**
-     * Relasi ke log upload asal data ini.
-     */
     public function uploadLog()
     {
         return $this->belongsTo(UploadLog::class, 'upload_log_id');
