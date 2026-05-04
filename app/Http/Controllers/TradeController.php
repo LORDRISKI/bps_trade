@@ -33,6 +33,14 @@ class TradeController extends Controller
         ));
     }
 
+    // ← BARU: dipakai oleh halaman publik untuk auto-refresh saat data berubah
+    public function count()
+    {
+        return response()->json([
+            'count' => TradeData::count(),
+        ]);
+    }
+
     public function export(Request $request)
     {
         $filters = $request->only([

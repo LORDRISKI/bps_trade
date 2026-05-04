@@ -17,6 +17,7 @@ Route::prefix('trade')->name('trade.')->group(function () {
     Route::get('/', [TradeController::class, 'index'])->name('index');
     Route::get('/export', [TradeController::class, 'export'])->name('export');
     Route::get('/export/{id}', [TradeController::class, 'exportSingle'])->name('export.single');
+    Route::get('/count', [TradeController::class, 'count'])->name('count'); // ← BARU
 });
 
 // ─────────────────────────────────────────────

@@ -411,6 +411,28 @@
             cursor: not-allowed;
         }
 
+        /* === LIVE INDICATOR === */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: var(--accent3);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent3);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
         @media (max-width: 900px) {
             .main {
                 grid-template-columns: 1fr;
@@ -561,6 +583,10 @@
                     <div class="table-title">Hasil Data</div>
                     <div class="records-count">{{ number_format($data->total()) }} records ditemukan</div>
                 </div>
+                {{-- Indikator live sync --}}
+                <div class="live-indicator">
+                    <span class="live-dot"></span> LIVE
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -650,6 +676,21 @@
         </div>
     </main>
 </div>
+
+<script>
+    // Cek setiap 10 detik apakah jumlah data berubah
+    let currentCount = {{ $totalRecords ?? 0 }};
+
+    setInterval(async () => {
+        try {
+            const res = await fetch('{{ route("trade.count") }}');
+            const data = await res.json();
+            if (data.count !== currentCount) {
+                location.reload();
+            }
+        } catch (e) {}
+    }, 10000); // 10 detik
+</script>
 
 </body>
 </html>

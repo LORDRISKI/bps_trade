@@ -70,7 +70,7 @@ class UploadController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file'  => 'required|file|mimes:csv,xlsx,xls,txt|max:10240',
+            'file'  => 'required|file|mimes:csv,xlsx,xls,txt|max:51200', // FIX 1: naikkan limit jadi 50MB
             'jenis' => 'required|in:ekspor,impor',
         ]);
 
@@ -124,21 +124,40 @@ class UploadController extends Controller
     private function processCsv(string $filePath, string $jenis, int $logId): array
     {
         $total = $success = $failed = 0;
+
+        // FIX 2: Deteksi delimiter otomatis (koma atau titik koma)
+        $firstLine = '';
+        if (($f = fopen($filePath, 'r')) !== false) {
+            $firstLine = fgets($f);
+            fclose($f);
+        }
+        $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
+
         if (($handle = fopen($filePath, 'r')) !== false) {
             $header = null;
-            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
                 if (!$header) {
                     $header = $this->normalizeHeader($row);
                     continue;
                 }
+                // Skip baris kosong
+                if (empty(array_filter($row, fn($v) => trim((string)$v) !== ''))) continue;
+
+                // FIX 3: Pastikan jumlah kolom sama dengan header
+                if (count($row) !== count($header)) {
+                    $failed++;
+                    \Log::warning("Baris $total: jumlah kolom tidak cocok (" . count($row) . " vs " . count($header) . ")");
+                    continue;
+                }
+
                 $total++;
                 try {
                     $this->insertRow(array_combine($header, $row), $jenis, $logId);
                     $success++;
                 } catch (\Exception $e) {
                     $failed++;
-                    \Log::error('Insert gagal: ' . $e->getMessage());
-                    if ($failed === 1) throw $e;
+                    // FIX 4: Hapus "if ($failed === 1) throw $e" — jangan hentikan semua proses hanya karena 1 baris gagal
+                    \Log::error("Insert gagal baris $total: " . $e->getMessage());
                 }
             }
             fclose($handle);
@@ -156,18 +175,26 @@ class UploadController extends Controller
         foreach ($spreadsheet->getAllSheets() as $sheet) {
             $rows   = $sheet->toArray();
             $header = null;
-            foreach ($rows as $row) {
+            foreach ($rows as $rowIndex => $row) {
                 if (!$header) {
                     $header = $this->normalizeHeader(array_map('strval', $row));
                     continue;
                 }
-                if (empty(array_filter($row))) continue;
+                if (empty(array_filter($row, fn($v) => trim((string)$v) !== ''))) continue;
+
+                // FIX 3: Pastikan jumlah kolom sama dengan header
+                if (count($row) !== count($header)) {
+                    $failed++;
+                    continue;
+                }
+
                 $total++;
                 try {
                     $this->insertRow(array_combine($header, array_map('strval', $row)), $jenis, $logId);
                     $success++;
                 } catch (\Exception $e) {
                     $failed++;
+                    \Log::error("Insert Excel gagal baris $rowIndex: " . $e->getMessage());
                 }
             }
         }
@@ -181,18 +208,27 @@ class UploadController extends Controller
     {
         return array_map(function ($h) {
             $h = strtolower(trim((string) $h));
-            $h = str_replace([' ', '(', ')', '-', '.'], '_', $h);
-            return rtrim($h, '_');
+            $h = preg_replace('/[\s\(\)\-\.]+/', '_', $h); // FIX 5: pakai regex agar lebih robust
+            return trim($h, '_');
         }, $row);
     }
 
     private function insertRow(array $row, string $jenis, int $logId): void
     {
+        // FIX 6: $get sekarang juga cek versi dengan spasi asli (sebelum normalisasi)
         $get = function (array $row, array $keys) {
             foreach ($keys as $key) {
-                $variants = [$key, strtolower($key), strtoupper($key)];
+                $variants = [
+                    $key,
+                    strtolower($key),
+                    strtoupper($key),
+                    str_replace('_', ' ', $key),       // "neg pil" dari "neg_pil"
+                    str_replace('_', '.', $key),       // "negara.1" dari "negara_1"
+                ];
                 foreach ($variants as $k) {
-                    if (isset($row[$k]) && trim((string)$row[$k]) !== '') return $row[$k];
+                    if (array_key_exists($k, $row) && trim((string)$row[$k]) !== '') {
+                        return $row[$k];
+                    }
                 }
             }
             return null;
@@ -207,55 +243,48 @@ class UploadController extends Controller
 
     private function insertEkspor(array $row, int $logId, callable $get): void
     {
-        // Kolom ekspor: jrec, bulan, tahun, propinsi, pelabuhan, HS8_btki2022,
-        //               negara (kode), berat, nilai, negara.1 (nama), deskhs8,
-        //               neg pil, pel riil, HS8_desk, Keterangan
         TradeData::create([
             'upload_log_id' => $logId,
             'jenis'         => 'ekspor',
             'bulan'         => $get($row, ['bulan']),
             'tahun'         => $get($row, ['tahun']),
             'propinsi'      => $get($row, ['propinsi', 'propir']),
-            'pelabuhan'     => $get($row, ['pelabuhan']),               // kode pelabuhan
+            'pelabuhan'     => $get($row, ['pelabuhan']),
             'hs_code'       => $get($row, ['hs8_btki2022', 'hs8_btki22', 'hs_code']),
-            'kode_negara'   => $get($row, ['negara']),                  // kode negara
+            'kode_negara'   => $get($row, ['negara']),
             'berat_kg'      => $this->parseNumber($get($row, ['berat'])),
             'nilai_usd'     => $this->parseNumber($get($row, ['nilai'])),
-            'negara_tujuan' => $get($row, ['negara_1', 'negara.1']),    // nama negara lengkap
-            'deskhs8'       => $get($row, ['deskhs8']),                 // kategori komoditas
+            'negara_tujuan' => $get($row, ['negara_1', 'negara_1']),   // hasil normalisasi "negara.1"
+            'deskhs8'       => $get($row, ['deskhs8']),
             'neg_pil'       => $get($row, ['neg_pil']),
-            'pel_riil'      => $get($row, ['pel_riil']),                // nama pelabuhan nyata
-            'komoditas'     => $get($row, ['hs8_desk', 'hs8desk']),    // deskripsi HS8
+            'pel_riil'      => $get($row, ['pel_riil']),
+            'komoditas'     => $get($row, ['hs8_desk', 'hs8desk']),
             'keterangan'    => $get($row, ['keterangan']),
         ]);
     }
 
     private function insertImpor(array $row, int $logId, callable $get): void
     {
-        // Kolom impor: JREC, BULAN, TAHUN, PROPINSI, PELABUHAN, HS8_BTKI22,
-        //              NEGARA (kode), BERAT, NILAI, negara (nama), Becx, neg,
-        //              deskr, lama, HS8desk, nm_pelabuhan, nm_negara,
-        //              Jenis, nm_prop, negara asal, pel_bong
         TradeData::create([
             'upload_log_id' => $logId,
             'jenis'         => 'impor',
             'bulan'         => $get($row, ['bulan']),
             'tahun'         => $get($row, ['tahun']),
             'propinsi'      => $get($row, ['propinsi']),
-            'pelabuhan'     => $get($row, ['pelabuhan']),               // kode pelabuhan
+            'pelabuhan'     => $get($row, ['pelabuhan']),
             'hs_code'       => $get($row, ['hs8_btki22', 'hs8_btki2022', 'hs_code']),
-            'kode_negara'   => $get($row, ['negara']),                  // kode negara
+            'kode_negara'   => $get($row, ['negara']),
             'berat_kg'      => $this->parseNumber($get($row, ['berat'])),
             'nilai_usd'     => $this->parseNumber($get($row, ['nilai'])),
-            'negara_tujuan' => $get($row, ['nm_negara']),               // nama negara lengkap
-            'komoditas'     => $get($row, ['hs8desk', 'hs8_desk']),    // deskripsi HS8
+            'negara_tujuan' => $get($row, ['nm_negara']),
+            'komoditas'     => $get($row, ['hs8desk', 'hs8_desk']),
             'becx'          => $get($row, ['becx']),
             'neg'           => $get($row, ['neg']),
-            'deskr'         => $get($row, ['deskr']),                   // kategori negara
+            'deskr'         => $get($row, ['deskr']),
             'lama'          => $get($row, ['lama']),
             'nm_pelabuhan'  => $get($row, ['nm_pelabuhan']),
             'nm_negara'     => $get($row, ['nm_negara']),
-            'jenis_barang'  => $get($row, ['jenis']),                   // NM / dll
+            'jenis_barang'  => $get($row, ['jenis']),
             'nm_prop'       => $get($row, ['nm_prop']),
             'negara_asal'   => $get($row, ['negara_asal']),
             'pel_bong'      => $get($row, ['pel_bong']),
@@ -266,7 +295,15 @@ class UploadController extends Controller
     private function parseNumber($value): ?float
     {
         if ($value === null || $value === '') return null;
-        $clean = str_replace([',', ' '], ['', ''], $value);
+        // FIX 7: Handle format angka dengan titik sebagai pemisah ribuan (1.000.000)
+        $clean = trim((string)$value);
+        // Jika ada koma sebagai desimal: 1.234,56 → 1234.56
+        if (preg_match('/^\d{1,3}(\.\d{3})+(,\d+)?$/', $clean)) {
+            $clean = str_replace('.', '', $clean);
+            $clean = str_replace(',', '.', $clean);
+        } else {
+            $clean = str_replace([',', ' '], ['', ''], $clean);
+        }
         return is_numeric($clean) ? (float) $clean : null;
     }
 
