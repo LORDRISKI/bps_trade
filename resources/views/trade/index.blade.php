@@ -5,40 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Ekspor Impor — BPS Trade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0e1a;
-            --bg2: #0f1625;
-            --bg3: #151d30;
-            --border: rgba(99,179,237,0.12);
-            --accent: #3b82f6;
-            --accent2: #06b6d4;
+            --bg: #f5f4f0;
+            --bg2: #ffffff;
+            --bg3: #eeece8;
+            --border: #e0ddd8;
+            --border-dark: #c8c4be;
+            --accent: #1e3a5f;
+            --accent2: #2563eb;
             --accent3: #10b981;
-            --red: #f43f5e;
-            --text: #e2e8f0;
-            --text-dim: #64748b;
-            --text-mid: #94a3b8;
-            --card: rgba(15,22,37,0.95);
-            --glow: 0 0 30px rgba(59,130,246,0.15);
+            --red: #e53e3e;
+            --text: #1a1a1a;
+            --text-dim: #9b9890;
+            --text-mid: #6b6863;
+            --card: #ffffff;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
         }
 
-        /* === HEADER === */
+        /* === NAVBAR === */
         .header {
-            background: linear-gradient(135deg, #0a0e1a 0%, #0d1829 50%, #091220 100%);
+            background: var(--bg2);
             border-bottom: 1px solid var(--border);
             padding: 0 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(20px);
         }
         .header-inner {
             max-width: 1400px;
@@ -62,138 +61,191 @@
             object-fit: contain;
         }
         .logo-text {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
         }
         .logo-sub {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-dim);
             font-weight: 400;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
         }
         .header-actions {
             display: flex;
-            gap: 12px;
+            gap: 24px;
             align-items: center;
         }
+        .nav-link {
+            font-size: 0.88rem;
+            color: var(--text-mid);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.15s;
+        }
+        .nav-link:hover { color: var(--text); }
         .btn {
             padding: 8px 18px;
             border-radius: 8px;
             font-size: 0.82rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            border: none;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Inter', sans-serif;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 7px;
             transition: all 0.2s;
+            border: none;
         }
         .btn-ghost {
             background: transparent;
             color: var(--text-mid);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-dark);
         }
         .btn-ghost:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            background: var(--bg3);
+            color: var(--text);
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #2563eb);
+            background: var(--accent);
             color: white;
-            box-shadow: 0 4px 15px rgba(59,130,246,0.3);
         }
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+            background: #16304f;
         }
         .btn-green {
-            background: linear-gradient(135deg, var(--accent3), #059669);
+            background: var(--accent3);
             color: white;
         }
 
         /* === HERO === */
         .hero {
-            background: linear-gradient(135deg, #0a0e1a 0%, #0d1829 100%);
-            padding: 3rem 2rem 2.5rem;
+            background: var(--bg2);
+            padding: 5rem 2rem 4rem;
             border-bottom: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -80px; right: -100px;
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
-            pointer-events: none;
+            text-align: center;
         }
         .hero-inner {
-            max-width: 1400px;
+            max-width: 700px;
             margin: 0 auto;
         }
         .hero-tag {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.25);
-            padding: 4px 12px;
-            border-radius: 20px;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid var(--border-dark);
+            padding: 5px 16px;
+            border-radius: 999px;
             font-size: 0.72rem;
-            color: var(--accent);
-            letter-spacing: 0.06em;
+            color: var(--text-mid);
+            letter-spacing: 0.07em;
             text-transform: uppercase;
-            margin-bottom: 1rem;
-            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .hero-tag-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
         }
         .hero h1 {
-            font-size: clamp(1.6rem, 3vw, 2.4rem);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.15;
-            margin-bottom: 0.6rem;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.25rem;
+            color: var(--text);
         }
-        .hero h1 span {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .hero h1 em {
+            color: #2563eb;
+            font-style: italic;
+        }
+        .hero h1 .jambi {
+            color: #b8860b;
+            font-style: italic;
         }
         .hero p {
             color: var(--text-mid);
-            font-size: 0.95rem;
-            font-weight: 300;
-            max-width: 600px;
+            font-size: 1rem;
+            font-weight: 400;
+            max-width: 480px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
         }
+        .hero-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        .btn-hero-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-hero-primary:hover { background: #16304f; }
+        .btn-hero-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-hero-outline:hover { background: var(--bg3); }
         .stats-row {
             display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
+            gap: 1rem;
+            justify-content: center;
             flex-wrap: wrap;
         }
         .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
+            background: var(--bg3);
+            border-radius: 10px;
+            padding: 14px 24px;
+            min-width: 160px;
+            text-align: center;
         }
         .stat-label {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.07em;
+            font-weight: 500;
+            margin-bottom: 4px;
         }
         .stat-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--accent2);
         }
-        .stat-value.green { color: var(--accent3); }
-        .stat-value.cyan { color: var(--accent2); }
+        .stat-value.green { color: #0f6e56; }
+        .stat-value.cyan { color: #0f6e56; }
 
         /* === MAIN LAYOUT === */
         .main {
@@ -216,8 +268,8 @@
             top: 80px;
         }
         .sidebar-title {
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-dim);
@@ -237,30 +289,31 @@
         }
         .filter-label {
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-mid);
             margin-bottom: 6px;
             display: block;
         }
         .filter-input, .filter-select {
             width: 100%;
-            background: rgba(255,255,255,0.04);
+            background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 7px;
             padding: 8px 10px;
             color: var(--text);
             font-size: 0.82rem;
-            font-family: 'Sora', sans-serif;
+            font-family: 'Inter', sans-serif;
             outline: none;
             transition: border-color 0.2s;
             appearance: none;
         }
         .filter-input:focus, .filter-select:focus {
-            border-color: var(--accent);
-            background: rgba(59,130,246,0.05);
+            border-color: var(--accent2);
+            background: #fff;
         }
         .filter-select option {
-            background: #0f1625;
+            background: #fff;
+            color: var(--text);
         }
         .filter-actions {
             display: flex;
@@ -277,12 +330,12 @@
             padding: 3px 10px;
             border-radius: 20px;
             font-size: 0.68rem;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.06em;
         }
-        .badge-ekspor { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.25); }
-        .badge-impor { background: rgba(244,63,94,0.12); color: var(--red); border: 1px solid rgba(244,63,94,0.2); }
+        .badge-ekspor { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-impor { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
         /* === TABLE AREA === */
         .table-card {
@@ -302,7 +355,8 @@
         }
         .table-title {
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 600;
+            color: var(--text);
         }
         .records-count {
             font-size: 0.78rem;
@@ -317,22 +371,22 @@
             font-size: 0.82rem;
         }
         thead th {
-            background: rgba(255,255,255,0.03);
+            background: var(--bg3);
             padding: 11px 14px;
             text-align: left;
-            font-size: 0.7rem;
+            font-size: 0.69rem;
             text-transform: uppercase;
             letter-spacing: 0.07em;
             color: var(--text-dim);
-            font-weight: 700;
+            font-weight: 600;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
         tbody tr {
-            border-bottom: 1px solid rgba(99,179,237,0.06);
+            border-bottom: 1px solid var(--border);
             transition: background 0.15s;
         }
-        tbody tr:hover { background: rgba(59,130,246,0.04); }
+        tbody tr:hover { background: #f8f7f4; }
         tbody tr:last-child { border-bottom: none; }
         td {
             padding: 11px 14px;
@@ -392,7 +446,7 @@
             border-radius: 6px;
             font-size: 0.78rem;
             color: var(--text-mid);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-dark);
             text-decoration: none;
             transition: all 0.15s;
             background: transparent;
@@ -403,8 +457,8 @@
             border-color: var(--accent);
         }
         .page-item .page-link:hover:not(.disabled) {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: var(--accent2);
+            color: var(--accent2);
         }
         .page-item.disabled .page-link {
             opacity: 0.35;
@@ -417,7 +471,7 @@
             align-items: center;
             gap: 6px;
             font-size: 0.7rem;
-            color: var(--accent3);
+            color: #16a34a;
             font-weight: 600;
             letter-spacing: 0.05em;
         }
@@ -425,7 +479,7 @@
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: var(--accent3);
+            background: #22c55e;
             animation: pulse-dot 2s infinite;
         }
         @keyframes pulse-dot {
@@ -439,7 +493,7 @@
                 padding: 1rem;
             }
             .sidebar { position: static; }
-            .stats-row { gap: 1.2rem; }
+            .stats-row { gap: 0.75rem; }
             .header-actions { display: none; }
         }
     </style>
@@ -462,27 +516,28 @@
 
 <section class="hero">
     <div class="hero-inner">
-        <div class="hero-tag">📦 Portal Data Publik</div>
-        <h1>Data <span>Ekspor &amp; Impor</h1>
-        <p>Mengakses dan unduh data perdagangan internasional berdasarkan komoditas, negara tujuan, pelabuhan, dan periode waktu.</p>
+        <div class="hero-tag"><span class="hero-tag-dot"></span> Portal Data Publik BPS</div>
+        <h1>Statistik <em>Ekspor &amp; Impor</em><br>Provinsi <span class="jambi">Jambi</span></h1>
+        <p>Akses data perdagangan internasional secara terbuka — berdasarkan komoditas, negara tujuan, pelabuhan, dan periode waktu.</p>
+        <div style="margin-bottom: 3rem;"></div>
         <div class="stats-row">
             <div class="stat-item">
-                <span class="stat-label">Total Records</span>
-                <span class="stat-value">{{ number_format($totalRecords) }}</span>
+                <div class="stat-label">Total Records</div>
+                <div class="stat-value">{{ number_format($totalRecords) }}</div>
             </div>
             <div class="stat-item">
-                <span class="stat-label">Total Berat (Kg)</span>
-                <span class="stat-value cyan">{{ number_format($totalBerat, 0) }}</span>
+                <div class="stat-label">Total Berat (Kg)</div>
+                <div class="stat-value cyan">{{ number_format($totalBerat, 0) }}</div>
             </div>
             <div class="stat-item">
-                <span class="stat-label">Total Nilai (USD)</span>
-                <span class="stat-value green">{{ number_format($totalNilai, 0) }}</span>
+                <div class="stat-label">Total Nilai (USD)</div>
+                <div class="stat-value green">{{ number_format($totalNilai, 0) }}</div>
             </div>
         </div>
     </div>
 </section>
 
-<div class="main">
+<div class="main" id="data-section">
     <!-- SIDEBAR FILTER -->
     <aside class="sidebar">
         <div class="sidebar-title">Filter Data</div>

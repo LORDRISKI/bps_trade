@@ -5,19 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login — BPS Trade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0e1a; --bg2: #0f1625; --bg3: #151d30;
-            --border: rgba(99,179,237,0.12);
-            --accent: #3b82f6; --accent2: #06b6d4; --accent3: #10b981;
-            --red: #f43f5e;
-            --text: #e2e8f0; --text-dim: #64748b; --text-mid: #94a3b8;
-            --card: rgba(15,22,37,0.95);
+            --bg: #f5f4f0;
+            --bg2: #ffffff;
+            --bg3: #eeece8;
+            --border: #e0ddd8;
+            --border-dark: #c8c4be;
+            --accent: #1e3a5f;
+            --accent2: #2563eb;
+            --red: #e53e3e;
+            --text: #1a1a1a;
+            --text-dim: #9b9890;
+            --text-mid: #6b6863;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Sora', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             min-height: 100vh;
             display: flex;
@@ -32,10 +37,9 @@
             padding: 2.5rem 2rem;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
         }
 
-        /* LOGO */
         .logo {
             text-align: center;
             margin-bottom: 1.5rem;
@@ -47,13 +51,10 @@
             justify-content: center;
             margin-bottom: 0.75rem;
         }
-        .logo-icon img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-        }
+        .logo-icon img { width:100%; height:100%; object-fit:contain; }
         .logo-name {
-            font-size: 1.3rem;
-            font-weight: 800;
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--text);
         }
         .logo-sub {
@@ -62,45 +63,50 @@
             margin-top: 3px;
         }
 
-        /* BADGE */
         .badge-admin {
-            display: inline-block;
-            background: rgba(59,130,246,0.12);
-            color: var(--accent);
-            border: 1px solid rgba(59,130,246,0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            color: var(--text-mid);
+            border: 1px solid var(--border-dark);
             font-size: 0.68rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 999px;
             letter-spacing: 0.07em;
             text-transform: uppercase;
             margin-bottom: 1rem;
+        }
+        .badge-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
         }
 
         h2 {
             text-align: center;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text);
             margin-bottom: 1.75rem;
         }
 
-        /* ALERTS */
         .alert {
             padding: 0.7rem 0.9rem;
             border-radius: 8px;
             font-size: 0.8rem;
             margin-bottom: 1rem;
         }
-        .alert-error   { background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); color: var(--red); }
-        .alert-success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); color: var(--accent3); }
+        .alert-error   { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+        .alert-success { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; }
 
-        /* FIELDS */
         .field { margin-bottom: 1.1rem; }
         label {
             display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 600;
             color: var(--text-mid);
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -108,22 +114,23 @@
         }
         input[type=email], input[type=password] {
             width: 100%;
-            padding: 0.6rem 0.9rem;
-            background: rgba(255,255,255,0.04);
+            padding: 0.65rem 0.9rem;
+            background: var(--bg3);
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 0.9rem;
             color: var(--text);
-            font-family: 'Sora', sans-serif;
+            font-family: 'Inter', sans-serif;
             outline: none;
-            transition: border 0.2s, box-shadow 0.2s;
+            transition: border 0.2s, background 0.2s;
         }
         input[type=email]::placeholder, input[type=password]::placeholder {
             color: var(--text-dim);
         }
         input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+            border-color: var(--accent2);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
         }
         .error-text {
             font-size: 0.75rem;
@@ -131,13 +138,12 @@
             margin-top: 5px;
         }
 
-        /* REMEMBER */
         .remember {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.82rem;
-            color: var(--text-dim);
+            color: var(--text-mid);
             margin-bottom: 1.4rem;
         }
         .remember input[type=checkbox] {
@@ -145,32 +151,31 @@
             accent-color: var(--accent);
             cursor: pointer;
         }
-        .remember label { margin-bottom: 0; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-dim); }
+        .remember label { margin-bottom:0; text-transform:none; letter-spacing:0; font-weight:400; color:var(--text-mid); }
 
-        /* BUTTON */
         .btn-submit {
             width: 100%;
-            padding: 0.7rem;
-            background: linear-gradient(135deg, var(--accent), #2563eb);
+            padding: 0.75rem;
+            background: var(--accent);
             color: white;
             font-size: 0.88rem;
-            font-weight: 700;
-            font-family: 'Sora', sans-serif;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59,130,246,0.3);
-            transition: transform 0.15s, box-shadow 0.15s;
+            transition: background 0.2s;
         }
-        .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+        .btn-submit:hover { background: #16304f; }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
         }
 
-        /* BACK LINK */
         .back-link {
             text-align: center;
-            margin-top: 1.25rem;
             font-size: 0.8rem;
         }
         .back-link a {
@@ -178,14 +183,7 @@
             text-decoration: none;
             transition: color 0.15s;
         }
-        .back-link a:hover { color: var(--accent); }
-
-        /* DIVIDER */
-        .divider {
-            height: 1px;
-            background: var(--border);
-            margin: 1.5rem 0;
-        }
+        .back-link a:hover { color: var(--text); }
     </style>
 </head>
 <body>
@@ -197,7 +195,7 @@
         </div>
 
         <div style="text-align:center; margin-bottom:1rem;">
-            <span class="badge-admin">Admin Panel</span>
+            <span class="badge-admin"><span class="badge-dot"></span> Admin Panel</span>
         </div>
 
         <h2>Login Admin</h2>
@@ -245,7 +243,7 @@
         <div class="divider"></div>
 
         <div class="back-link">
-           
+            <a href="{{ route('trade.index') }}">← Kembali ke Portal Data</a>
         </div>
     </div>
 </body>
