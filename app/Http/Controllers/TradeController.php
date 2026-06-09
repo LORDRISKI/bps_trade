@@ -41,6 +41,35 @@ class TradeController extends Controller
         ]);
     }
 
+    // Edit data — hanya admin
+    public function edit($id)
+    {
+        $row = TradeData::findOrFail($id);
+        return response()->json($row);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $row = TradeData::findOrFail($id);
+
+        $validated = $request->validate([
+            'tahun'        => 'required|integer',
+            'bulan'        => 'nullable|integer|min:1|max:12',
+            'jenis'        => 'required|in:ekspor,impor',
+            'hs_code'      => 'nullable|string|max:20',
+            'komoditas'    => 'nullable|string|max:500',
+            'negara_tujuan'=> 'nullable|string|max:100',
+            'berat_kg'     => 'nullable|numeric|min:0',
+            'nilai_usd'    => 'nullable|numeric|min:0',
+            'pelabuhan'    => 'nullable|string|max:20',
+            'keterangan'   => 'nullable|string|max:100',
+        ]);
+
+        $row->update($validated);
+
+        return response()->json(['success' => true, 'message' => 'Data berhasil diperbarui.']);
+    }
+
     public function export(Request $request)
     {
         $filters = $request->only([

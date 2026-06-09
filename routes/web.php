@@ -17,7 +17,12 @@ Route::prefix('trade')->name('trade.')->group(function () {
     Route::get('/', [TradeController::class, 'index'])->name('index');
     Route::get('/export', [TradeController::class, 'export'])->name('export');
     Route::get('/export/{id}', [TradeController::class, 'exportSingle'])->name('export.single');
-    Route::get('/count', [TradeController::class, 'count'])->name('count'); // ← BARU
+    Route::get('/count', [TradeController::class, 'count'])->name('count');
+    // Edit — hanya admin
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/{id}/edit', [TradeController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [TradeController::class, 'update'])->name('update');
+    });
 });
 
 // ─────────────────────────────────────────────

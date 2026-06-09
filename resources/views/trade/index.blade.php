@@ -132,6 +132,7 @@
             max-width: 700px;
             margin: 0 auto;
         }
+        .hero-content { /* unused */ }
         .hero-tag {
             display: inline-flex;
             align-items: center;
@@ -247,15 +248,23 @@
         .stat-value.green { color: #0f6e56; }
         .stat-value.cyan { color: #0f6e56; }
 
+        /* === PAGE WRAPPER === */
+        .page-wrapper {
+            overflow-x: hidden;
+        }
+
         /* === MAIN LAYOUT === */
         .main {
-            max-width: 1400px;
-            margin: 0 auto;
+            width: 100%;
             padding: 2rem;
             display: grid;
             grid-template-columns: 260px 1fr;
             gap: 1.5rem;
             align-items: start;
+        }
+        .main > main {
+            min-width: 0;
+            overflow: hidden;
         }
 
         /* === FILTER SIDEBAR === */
@@ -337,12 +346,13 @@
         .badge-ekspor { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .badge-impor { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* === TABLE AREA === */
         .table-card {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
+            width: 100%;
+            min-width: 0;
         }
         .table-header {
             padding: 1.25rem 1.5rem;
@@ -351,7 +361,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            flex-wrap: wrap;
         }
         .table-title {
             font-size: 0.9rem;
@@ -364,6 +373,10 @@
         }
         .table-wrapper {
             overflow-x: auto;
+            width: 100%;
+        }
+        .table-header-inner {
+            min-width: max-content;
         }
         table {
             width: 100%;
@@ -465,6 +478,117 @@
             cursor: not-allowed;
         }
 
+        /* === TOMBOL EDIT === */
+        .btn-edit {
+            background: #f0f4ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        .btn-edit:hover {
+            background: #dbeafe;
+        }
+
+        /* === MODAL EDIT === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+        .modal-sub {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-dim);
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text); }
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+        }
+        .modal-grid .full { grid-column: 1 / -1; }
+        .modal-label {
+            font-size: 0.73rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            margin-bottom: 5px;
+            display: block;
+        }
+        .modal-input, .modal-select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 8px 10px;
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .modal-input:focus, .modal-select:focus {
+            border-color: var(--accent2);
+            background: #fff;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .modal-toast {
+            position: fixed;
+            bottom: 2rem; right: 2rem;
+            background: #065f46;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .modal-toast.error { background: #991b1b; }
+        .modal-toast.show { display: block; animation: fadeInUp 0.3s ease; }
+        @keyframes fadeInUp {
+            from { opacity:0; transform: translateY(10px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
         /* === LIVE INDICATOR === */
         .live-indicator {
             display: inline-flex;
@@ -492,6 +616,12 @@
                 grid-template-columns: 1fr;
                 padding: 1rem;
             }
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .hero-content {
+                grid-column: 1;
+            }
             .sidebar { position: static; }
             .stats-row { gap: 0.75rem; }
             .header-actions { display: none; }
@@ -514,9 +644,9 @@
     </div>
 </header>
 
+<div class="page-wrapper">
 <section class="hero">
     <div class="hero-inner">
-        <div class="hero-tag"><span class="hero-tag-dot"></span> Portal Data Publik BPS</div>
         <h1>Statistik <em>Ekspor &amp; Impor</em><br>Provinsi <span class="jambi">Jambi</span></h1>
         <p>Akses data perdagangan internasional secara terbuka — berdasarkan komoditas, negara tujuan, pelabuhan, dan periode waktu.</p>
         <div style="margin-bottom: 3rem;"></div>
@@ -633,18 +763,18 @@
     <!-- TABLE AREA -->
     <main>
         <div class="table-card">
-            <div class="table-header">
-                <div>
-                    <div class="table-title">Hasil Data</div>
-                    <div class="records-count">{{ number_format($data->total()) }} records ditemukan</div>
-                </div>
-                {{-- Indikator live sync --}}
-                <div class="live-indicator">
-                    <span class="live-dot"></span> LIVE
-                </div>
-            </div>
-
             <div class="table-wrapper">
+                <div class="table-header table-header-inner">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div class="table-title">Hasil Data</div>
+                            <div class="live-indicator">
+                                <span class="live-dot"></span> LIVE
+                            </div>
+                        </div>
+                        <div class="records-count">{{ number_format($data->total()) }} records ditemukan</div>
+                    </div>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -658,6 +788,11 @@
                             <th>Pelabuhan</th>
                             <th>Keterangan</th>
                             <th>Unduh</th>
+                            @auth
+                                @if(auth()->user()->is_admin ?? false)
+                                <th>Edit</th>
+                                @endif
+                            @endauth
                         </tr>
                     </thead>
                     <tbody>
@@ -685,6 +820,17 @@
                                     ⬇
                                 </a>
                             </td>
+                            @auth
+                                @if(auth()->user()->is_admin ?? false)
+                                <td>
+                                    <button onclick="openEditModal({{ $row->id }})"
+                                        class="btn btn-edit"
+                                        style="padding:4px 10px; font-size:0.72rem;">
+                                        ✏️
+                                    </button>
+                                </td>
+                                @endif
+                            @endauth
                         </tr>
                        @empty
                         <tr>
@@ -731,20 +877,186 @@
         </div>
     </main>
 </div>
+</div><!-- end page-wrapper -->
+
+@auth
+@if(auth()->user()->is_admin ?? false)
+<!-- MODAL EDIT -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+        <div class="modal-title">Edit Data Trade</div>
+        <div class="modal-sub" id="modalSub">ID: —</div>
+
+        <form id="editForm">
+            @csrf
+            <div class="modal-grid">
+                <div>
+                    <label class="modal-label">Tahun *</label>
+                    <input type="number" id="f_tahun" class="modal-input" required>
+                </div>
+                <div>
+                    <label class="modal-label">Bulan</label>
+                    <select id="f_bulan" class="modal-select">
+                        <option value="">— Pilih Bulan —</option>
+                        @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $bln)
+                            <option value="{{ $i+1 }}">{{ $bln }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="modal-label">Jenis *</label>
+                    <select id="f_jenis" class="modal-select" required>
+                        <option value="ekspor">Ekspor</option>
+                        <option value="impor">Impor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="modal-label">HS Code</label>
+                    <input type="text" id="f_hs_code" class="modal-input">
+                </div>
+                <div class="full">
+                    <label class="modal-label">Komoditas</label>
+                    <input type="text" id="f_komoditas" class="modal-input">
+                </div>
+                <div class="full">
+                    <label class="modal-label">Negara Tujuan</label>
+                    <input type="text" id="f_negara_tujuan" class="modal-input">
+                </div>
+                <div>
+                    <label class="modal-label">Berat (Kg)</label>
+                    <input type="number" step="0.01" id="f_berat_kg" class="modal-input">
+                </div>
+                <div>
+                    <label class="modal-label">Nilai (USD)</label>
+                    <input type="number" step="0.01" id="f_nilai_usd" class="modal-input">
+                </div>
+                <div>
+                    <label class="modal-label">Pelabuhan</label>
+                    <input type="text" id="f_pelabuhan" class="modal-input">
+                </div>
+                <div>
+                    <label class="modal-label">Keterangan</label>
+                    <input type="text" id="f_keterangan" class="modal-input">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" onclick="closeEditModal()" class="btn btn-ghost">Batal</button>
+                <button type="submit" class="btn btn-primary" id="saveBtn">💾 Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+@endauth
+
+<!-- TOAST NOTIFIKASI -->
+<div class="modal-toast" id="toast"></div>
 
 <script>
-    // Cek setiap 10 detik apakah jumlah data berubah
+    // ── Auto-refresh live ──
     let currentCount = {{ $totalRecords ?? 0 }};
-
     setInterval(async () => {
         try {
             const res = await fetch('{{ route("trade.count") }}');
             const data = await res.json();
-            if (data.count !== currentCount) {
-                location.reload();
-            }
+            if (data.count !== currentCount) location.reload();
         } catch (e) {}
-    }, 10000); // 10 detik
+    }, 10000);
+
+    // ── Modal Edit ──
+    let editId = null;
+
+    async function openEditModal(id) {
+        editId = id;
+        document.getElementById('modalSub').textContent = 'Memuat data...';
+        document.getElementById('editModal').classList.add('active');
+
+        try {
+            const res  = await fetch(`/trade/${id}/edit`);
+            const row  = await res.json();
+
+            document.getElementById('modalSub').textContent    = `ID: ${row.id} — ${row.komoditas ?? ''}`;
+            document.getElementById('f_tahun').value           = row.tahun ?? '';
+            document.getElementById('f_bulan').value           = row.bulan ?? '';
+            document.getElementById('f_jenis').value           = row.jenis ?? 'ekspor';
+            document.getElementById('f_hs_code').value         = row.hs_code ?? '';
+            document.getElementById('f_komoditas').value       = row.komoditas ?? '';
+            document.getElementById('f_negara_tujuan').value   = row.negara_tujuan ?? '';
+            document.getElementById('f_berat_kg').value        = row.berat_kg ?? '';
+            document.getElementById('f_nilai_usd').value       = row.nilai_usd ?? '';
+            document.getElementById('f_pelabuhan').value       = row.pelabuhan ?? '';
+            document.getElementById('f_keterangan').value      = row.keterangan ?? '';
+        } catch (e) {
+            showToast('Gagal memuat data.', true);
+            closeEditModal();
+        }
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+        editId = null;
+    }
+
+    // Tutup modal kalau klik overlay
+    document.getElementById('editModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
+    });
+
+    // Submit form edit
+    document.getElementById('editForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+
+        const payload = {
+            _method:       'PUT',
+            tahun:         document.getElementById('f_tahun').value,
+            bulan:         document.getElementById('f_bulan').value,
+            jenis:         document.getElementById('f_jenis').value,
+            hs_code:       document.getElementById('f_hs_code').value,
+            komoditas:     document.getElementById('f_komoditas').value,
+            negara_tujuan: document.getElementById('f_negara_tujuan').value,
+            berat_kg:      document.getElementById('f_berat_kg').value,
+            nilai_usd:     document.getElementById('f_nilai_usd').value,
+            pelabuhan:     document.getElementById('f_pelabuhan').value,
+            keterangan:    document.getElementById('f_keterangan').value,
+        };
+
+        try {
+            const res  = await fetch(`/trade/${editId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('✅ Data berhasil diperbarui!');
+                closeEditModal();
+                setTimeout(() => location.reload(), 1200);
+            } else {
+                showToast('Gagal menyimpan: ' + (data.message ?? 'Error'), true);
+            }
+        } catch (e) {
+            showToast('Terjadi kesalahan jaringan.', true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '💾 Simpan Perubahan';
+        }
+    });
+
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'modal-toast show' + (isError ? ' error' : '');
+        setTimeout(() => t.className = 'modal-toast', 3500);
+    }
 </script>
 
 </body>
