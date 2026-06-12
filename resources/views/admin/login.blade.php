@@ -198,7 +198,6 @@
             <span class="badge-admin"><span class="badge-dot"></span> Admin Panel</span>
         </div>
 
-        <h2>Login Admin</h2>
 
         @if (session('error'))
             <div class="alert alert-error">{{ session('error') }}</div>
@@ -243,7 +242,6 @@
         <div class="divider"></div>
 
         <div class="back-link">
-            <a href="{{ route('trade.index') }}">← Kembali ke Portal Data</a>
         </div>
     </div>
 </body>
